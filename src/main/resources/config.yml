@@ -1,0 +1,183 @@
+# ImpossibleDragon configuration
+# Phase 1: HP > 66%   Phase 2: 33-66%   Phase 3 (ENRAGED): < 33%
+#
+# FIGHT FLOW
+#  1. The dragon is SHIELDED (takes no damage) while crystals protect it.
+#  2. Every destroyed crystal gets its OWN respawn timer (hologram + filling ring).
+#  3. Destroy ALL crystals before they come back -> SHIELD BREAKS, dragon lands and is
+#     vulnerable for `broken-seconds`.
+#  4. Window ends / a phase gate is reached -> shield reforms, every crystal returns.
+#  5. After `fight.time-limit-seconds` the dragon goes DOOM (berserk).
+
+dragon:
+  max-health: 600
+  damage-taken-multiplier: 0.6 # only used when shield.enabled = false
+  max-damage-per-hit: 30       # 0 = off
+  damage-dealt-multiplier: 2.0 # damage dealt by the dragon and its attacks
+  lifesteal: 0.5               # dragon heals this fraction of damage it deals
+  crystal-heal-per-second: 1.0 # healing per living crystal per second
+  enrage-cooldown-multiplier: 0.5 # phase 3: ability cooldowns multiplied by this
+  flip-facing: false           # set true if tail/mouth effects show up on the wrong end
+  boss-bar-title: "&5&lImpossible Ender Dragon"
+
+fight:
+  time-limit-seconds: 600      # 10 minutes, then DOOM (0 = no limit)
+  doom-damage-multiplier: 2.0
+  doom-cooldown-multiplier: 0.4
+
+shield:
+  enabled: true
+  crystal-respawn-seconds: 40  # each crystal comes back this long after it was destroyed
+  broken-seconds: 35           # how long the dragon stays vulnerable
+  damage-multiplier: 0.0       # damage while shielded (0 = immune)
+  broken-damage-multiplier: 1.0
+  heal-on-reform: 0.05         # if you were too slow the dragon regains this fraction of max HP
+  land-on-break: true          # dragon lands on the portal while vulnerable
+  show-timers: true            # floating "Crystal returns in Ns" text
+
+rebirth:                       # the dragon "dies" ONCE, then rises again in a FINAL FORM (phase 4)
+  enabled: true
+  duration-seconds: 6          # invulnerable rebirth animation
+  health-fraction: 0.5         # health refilled to this fraction of max
+  damage-multiplier: 1.25      # extra damage dealt in final form
+  cooldown-multiplier: 0.8     # ability cooldowns in final form
+
+abilities:
+  fireball:                    # exploding dragon fireballs
+    enabled: true
+    min-phase: 1
+    cooldown-seconds: 7
+    count: 4                   # +1 per phase above 1, +1 per 2 players
+    explosion-power: 3.0       # 0 = vanilla
+
+  wither-skulls:
+    enabled: true
+    min-phase: 2
+    cooldown-seconds: 10
+    count: 4
+    break-blocks: false
+
+  lightning:                   # marked with sparks, strikes ~1s later
+    enabled: true
+    min-phase: 2
+    cooldown-seconds: 9
+    bolts: 3                   # +1 in phase 3, one per player in DOOM
+
+  tail:                        # telegraphed tail sweep
+    enabled: true
+    min-phase: 1
+    cooldown-seconds: 6
+    range: 30
+    damage: 10
+    knockback: 1.5
+
+  lightning-breath:            # charge at the mouth, beam hits where you WERE standing
+    enabled: true
+    min-phase: 2
+    cooldown-seconds: 12
+    windup-ticks: 22
+    damage: 12
+    length: 70
+
+  meteors:                     # marked circles, then fireballs fall from the sky
+    enabled: true
+    min-phase: 2
+    cooldown-seconds: 16
+    count: 6                   # +3 in phase 3
+    explosion-power: 3.0
+    break-blocks: false
+
+  void-orbs:                   # homing shulker bullets (levitation)
+    enabled: true
+    min-phase: 2
+    cooldown-seconds: 14
+    count: 3
+
+  gravity-well:                # drags everyone towards the dragon
+    enabled: true
+    min-phase: 3
+    cooldown-seconds: 28
+    radius: 45
+    strength: 0.22
+    duration-ticks: 50
+
+  minions:
+    enabled: true
+    min-phase: 1
+    cooldown-seconds: 22
+    per-wave: 4
+    max-alive: 14
+    lifetime-seconds: 60
+    types: [ENDERMAN, VEX, ENDERMAN, PHANTOM, BLAZE]
+
+  roar:                        # darkness + nausea + slowness
+    enabled: true
+    min-phase: 2
+    cooldown-seconds: 26
+    radius: 50
+
+  levitation:                  # lifts you up, then you fall
+    enabled: true
+    min-phase: 3
+    cooldown-seconds: 22
+    duration-ticks: 40
+
+models:
+  enabled: true
+  brightness: 9                # base light level of the models (0-15); eyes/spikes tips always glow
+  dragon:
+    enabled: true              # 3-headed obsidian + amethyst dragon (vanilla dragon becomes the invisible hitbox)
+    scale: 0.85
+    y-offset: 2.0
+  minions:
+    enabled: true              # every minion is shown as a flapping dragonling
+    scale: 1.0
+  skull-heads:
+    enabled: true              # wither skulls fly as dragon heads
+    scale: 0.22
+  bedrock:                     # Geyser/Floodgate players: voxel model made of armor stands (no display entities on Bedrock)
+    block-spacing: 0.65
+    y-offset: -1.75            # raise/lower the block grid if it floats or sinks
+    max-blocks-dragon: 320
+    max-blocks-minion: 45
+    max-blocks-skull: 14
+
+effects:
+  crystal-bubble:
+    enabled: true              # translucent purple energy sphere around every living crystal
+    panels: 64
+    radius: 2.4
+  warning-text: bedrock        # action-bar warnings for attacks: bedrock | everyone | off
+  crystal-circles:
+    enabled: true              # animated purple circles, spinning shields, timer rings
+
+rewards:
+  bonus-xp: 5000
+  items:                       # MATERIAL:amount
+    - "NETHERITE_INGOT:3"
+    - "ENCHANTED_GOLDEN_APPLE:2"
+    - "DIAMOND:24"
+    - "ELYTRA:1"
+
+messages:
+  phase-2: "&d&lThe Impossible Dragon grows stronger..."
+  phase-3: "&4&lTHE DRAGON IS ENRAGED!"
+  roar: "&5The dragon roars!"
+  lift: "&bThe void lifts you..."
+  death: "&a&lThe Impossible Dragon has been slain!"
+  doom: "&4&lTIME'S UP - THE DRAGON GOES BERSERK!"
+  shield-broken: "&a&lSHIELD BROKEN!"
+  shield-broken-sub: "&7Hit it! Vulnerable for {seconds}s"
+  shield-restored: "&5&lSHIELD RESTORED"
+  shield-restored-sub: "&7Destroy every crystal again!"
+  crystal-down: "&dCrystal destroyed &7(&f{down}&7/&f{total}&7) &8- &fback in {seconds}s"
+  warn-tail: "&c&l! TAIL STRIKE - get away from the dragon !"
+  warn-breath: "&e&l! LIGHTNING BREATH locked on you - MOVE !"
+  warn-lightning: "&e&l! Lightning incoming - MOVE !"
+  warn-meteors: "&6&l! METEORS - watch the ground circles !"
+  warn-orbs: "&5&l! VOID ORBS are homing on you !"
+  warn-pull: "&3&l! GRAVITY WELL - fight the pull !"
+  rebirth: "&4&lTHE DRAGON REFUSES TO DIE!"
+  rebirth-sub: "&7It rises again..."
+  phase-4: "&4&lFINAL FORM - THE DRAGON IS REBORN!"
+  phase-4-sub: "&7Faster. Stronger. No more second chances."
